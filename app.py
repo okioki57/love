@@ -1,39 +1,88 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import math
-import random
+import streamlit.components.v1 as components
 
-st.title("Renkli Kalp Çizimi ❤️")
+st.title("❤️")
 
-fig, ax = plt.subplots(figsize=(6, 6))
-ax.set_facecolor("black")
-fig.patch.set_facecolor("black")
+html_code = """
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+}
+canvas {
+    display: block;
+    margin: auto;
+}
+</style>
+</head>
 
-colors = ["red", "orange", "yellow", "green", "blue", "purple"]
+<body>
 
-for i in range(120):
-    angle = i * (math.pi * 2) / 120
+<canvas id="canvas"></canvas>
 
-    x = 16 * (math.sin(angle) ** 3) * 15
-    y = (
-        13 * math.cos(angle)
-        - 5 * math.cos(2 * angle)
-        - 2 * math.cos(3 * angle)
-        - math.cos(4 * angle)
-    ) * 15
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-    c = random.choice(colors)
+canvas.width = 600;
+canvas.height = 600;
 
-    ax.plot([0, x], [40, y], color=c, linewidth=1)
+let colors = [
+    "red",
+    "orange",
+    "yellow",
+    "lime",
+    "cyan",
+    "blue",
+    "purple"
+];
 
-    for _ in range(8):
-        ax.plot(
-            [x, x + 6],
-            [y, y + 6],
-            color=c,
-            linewidth=1
-        )
+let t = 0;
 
-ax.axis("off")
+function draw() {
 
-st.pyplot(fig)
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,600,600);
+
+    let cx = 300;
+    let cy = 300;
+
+    for(let i=0;i<120;i++){
+
+        let angle = i * Math.PI * 2 / 120;
+
+        let x = 16 * Math.pow(Math.sin(angle),3);
+        let y = -(13*Math.cos(angle)
+        -5*Math.cos(2*angle)
+        -2*Math.cos(3*angle)
+        -Math.cos(4*angle));
+
+        x *= 15;
+        y *= 15;
+
+        ctx.beginPath();
+        ctx.moveTo(cx,cy-40);
+        ctx.lineTo(cx+x,cy+y);
+
+        ctx.strokeStyle = colors[(i+Math.floor(t/10)) % colors.length];
+        ctx.stroke();
+    }
+
+    t++;
+
+    requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+</body>
+</html>
+"""
+
+components.html(html_code, height=650)
